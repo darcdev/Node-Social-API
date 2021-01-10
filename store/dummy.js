@@ -1,8 +1,10 @@
 // Mock database
 const db = {
-  user: [{ id: "1", name: "Carlos" }],
+  user: [
+    { id: "1", name: "Carlos" },
+    { id: "2", name: "Andrea" },
+  ],
 };
-
 async function list(table) {
   return db[table];
 }
@@ -12,14 +14,14 @@ async function get(table, id) {
   return collection.find((item) => item.id === id) || null;
 }
 
-function upsert(table, data) {
+async function upsert(table, data) {
   db[table].push(data);
+  return data;
 }
 
 function remove(table, id) {
   return true;
 }
-
 module.exports = {
   list,
   get,
