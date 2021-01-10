@@ -1,13 +1,24 @@
 // Mock database
-const db = {};
+const db = {
+  user: [{ id: "1", name: "Carlos" }],
+};
 
-function list(tabla) {}
+async function list(table) {
+  return db[table];
+}
 
-function get(tabla, id) {}
+async function get(table, id) {
+  let collection = await list(table);
+  return collection.find((item) => item.id === id) || null;
+}
 
-function upsert(tabla, data) {}
+function upsert(table, data) {
+  db[table].push(data);
+}
 
-function remove(tabla, id) {}
+function remove(table, id) {
+  return true;
+}
 
 module.exports = {
   list,
