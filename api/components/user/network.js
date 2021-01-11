@@ -3,11 +3,12 @@ const router = express.Router();
 
 const response = require("../../../network/response");
 const controller = require("./index");
+const secure = require("./secure");
 
 router.get("/", list);
 router.get("/:id", get);
 router.post("/", upsert);
-router.put("/", upsert);
+router.put("/", secure("update"), upsert);
 
 async function list(req, res) {
   try {
