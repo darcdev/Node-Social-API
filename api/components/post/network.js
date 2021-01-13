@@ -7,10 +7,11 @@ const secure = require("./secure");
 
 router.get("/", list);
 router.get("/:id", get);
-router.post("/", upsert);
+router.post("/", secure("add"), upsert);
 router.put("/", secure("update"), upsert);
-router.post("/follow/:id", secure("follow"), follow);
-router.get("/:id/following", following);
+router.post("/:id/like", secure("add"), like);
+router.get("/like", postsLiked);
+router.get("/:id/like", secure("list"), postLikers);
 
 async function list(req, res) {
   try {
@@ -20,36 +21,47 @@ async function list(req, res) {
     response.error(req, res, err.message, 500);
   }
 }
+
 async function get(req, res) {
   try {
-    const user = await controller.get(req.params.id);
-    response.success(req, res, user, 200);
+    const list = await controller.get(req.params.id);
+    response.success(req, res, list, 200);
   } catch (err) {
     response.error(req, res, err.message, 500);
   }
 }
+
 async function upsert(req, res) {
   try {
-    const user = await controller.upsert(req.body, req.user.id);
-    response.success(req, res, user, 200);
+    const post = await controller.upsert(req.params.id);
+    response.success(req, res, post, 200);
   } catch (err) {
     response.error(req, res, err.message, 500);
   }
 }
 
-async function follow(req, res) {
+async function like(req, res) {
   try {
-    const data = await controller.follow(req.user.id, req.params.id);
-    response.success(req, res, data, 201);
+    const result = await controller.upsert(req.params.id, req.user.id);
+    response.success(req, res, result, 200);
   } catch (err) {
     response.error(req, res, err.message, 500);
   }
 }
 
-async function following(req, res) {
+async function postsLiked(req, res) {
   try {
-    const data = await controller.following(req.params.id);
-    response.success(req, res, data, 201);
+    const result = await controller.upsert(req.user.id);
+    response.success(req, res, result, 200);
+  } catch (err) {
+    response.error(req, res, err.message, 500);
+  }
+}
+
+async function postLikers(req, res) {
+  try {
+    const result = await controller.upsert(req.params.id);
+    response.success(req, res, result, 200);
   } catch (err) {
     response.error(req, res, err.message, 500);
   }
