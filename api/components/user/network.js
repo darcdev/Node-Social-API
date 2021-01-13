@@ -9,6 +9,8 @@ router.get("/", list);
 router.get("/:id", get);
 router.post("/", upsert);
 router.put("/", secure("update"), upsert);
+router.post("/follow/:id", secure("follow"), follow);
+router.get("/:id/following", following);
 
 async function list(req, res) {
   try {
@@ -35,4 +37,21 @@ async function upsert(req, res) {
   }
 }
 
+async function follow(req, res) {
+  try {
+    const data = await controller.follow(req.user.id, req.params.id);
+    response.success(req, res, data, 201);
+  } catch (err) {
+    response.error(req, res, err.message, 500);
+  }
+}
+
+async function following(req, res) {
+  try {
+    const data = await controller.following(req.params.id);
+    response.success(req, res, data, 201);
+  } catch (err) {
+    response.error(req, res, err.message, 500);
+  }
+}
 module.exports = router;

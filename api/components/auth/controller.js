@@ -9,12 +9,11 @@ module.exports = function (injectedStore) {
 
   async function login(username, password) {
     const data = await store.query(TABLE, { username: username });
-    console.log(data);
     const equals = await bcrypt.compare(password, data.password);
     if (equals) {
       delete data.password;
       // generate token
-      return auth.sign(data);
+      return auth.sign({ ...data });
     } else {
       throw new Error("Informacion Invalida");
     }
